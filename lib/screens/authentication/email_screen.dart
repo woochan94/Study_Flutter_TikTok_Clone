@@ -87,6 +87,7 @@ class _UsernameScreenState extends State<EmailScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 onEditingComplete: _onSubmit,
+                autocorrect: false,
                 cursorColor: Colors.pink,
                 decoration: InputDecoration(
                   hintText: "Email",
