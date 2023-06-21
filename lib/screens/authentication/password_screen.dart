@@ -44,7 +44,7 @@ class _UsernameScreenState extends State<PasswordScreen> {
   }
 
   void _onSubmit() {
-    if (_password.isEmpty || _isPasswordValid()) return;
+    if (_password.isEmpty || !_isPasswordValid()) return;
     Navigator.push(
       context,
       MaterialPageRoute(
