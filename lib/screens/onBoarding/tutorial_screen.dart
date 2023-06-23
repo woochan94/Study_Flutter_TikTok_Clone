@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tiktok_clone/constants/gaps.dart';
 import 'package:tiktok_clone/constants/sizes.dart';
+
+enum Direction { right, left }
+
+enum Page { first, second }
 
 class TutorialScreen extends StatefulWidget {
   const TutorialScreen({super.key});
@@ -10,21 +15,49 @@ class TutorialScreen extends StatefulWidget {
 }
 
 class _TutorialScreenState extends State<TutorialScreen> {
+  Direction _direction = Direction.right;
+  Page _showingPage = Page.first;
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    if (details.delta.dx > 0) {
+      setState(() {
+        _direction = Direction.right;
+      });
+    } else {
+      setState(() {
+        _direction = Direction.left;
+      });
+    }
+  }
+
+  void _onPanEnd(DragEndDetails details) {
+    if (_direction == Direction.left) {
+      setState(() {
+        _showingPage = Page.second;
+      });
+    } else {
+      setState(() {
+        _showingPage = Page.first;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
+    return GestureDetector(
+      onPanUpdate: _onPanUpdate,
+      onPanEnd: _onPanEnd,
       child: Scaffold(
-        body: const SafeArea(
-          child: TabBarView(children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizes.size24,
-              ),
-              child: Column(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Sizes.size24,
+            ),
+            child: AnimatedCrossFade(
+              firstChild: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Gaps.v52,
+                  Gaps.v80,
                   Text(
                     'Watch cool videos!',
                     style: TextStyle(
@@ -41,17 +74,12 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   ),
                 ],
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizes.size24,
-              ),
-              child: Column(
+              secondChild: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Gaps.v52,
+                  Gaps.v80,
                   Text(
-                    'Watch cool videos!',
+                    'Follow the rules',
                     style: TextStyle(
                       fontSize: Sizes.size32,
                       fontWeight: FontWeight.bold,
@@ -66,47 +94,29 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   ),
                 ],
               ),
+              crossFadeState: _showingPage == Page.first
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              duration: const Duration(milliseconds: 300),
             ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizes.size24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Gaps.v52,
-                  Text(
-                    'Watch cool videos!',
-                    style: TextStyle(
-                      fontSize: Sizes.size32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Gaps.v20,
-                  Text(
-                    "Videos are personalized for you based on what you watch, like, and share.",
-                    style: TextStyle(
-                      fontSize: Sizes.size16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ]),
+          ),
         ),
         bottomNavigationBar: BottomAppBar(
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.symmetric(
-              vertical: Sizes.size48,
+              vertical: Sizes.size24,
+              horizontal: Sizes.size24,
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TabPageSelector(
-                  color: Colors.white,
-                  selectedColor: Colors.black38,
-                ),
-              ],
+            child: AnimatedOpacity(
+              duration: const Duration(
+                milliseconds: 300,
+              ),
+              opacity: _showingPage == Page.first ? 0 : 1,
+              child: CupertinoButton(
+                onPressed: () {},
+                color: Theme.of(context).primaryColor,
+                child: const Text('Enter the app!'),
+              ),
             ),
           ),
         ),
